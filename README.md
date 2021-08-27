@@ -1,10 +1,11 @@
 # db_manage
----
+
 _A module to make it easier to use databases (sqlite and etc.)_
+
 **`P.S. This module is recommended for educational purposes only.`**
 
 ## Features
----
+
 - Decorator to simplify interaction with the database
 - You only need to write SQL code and that's it
 
