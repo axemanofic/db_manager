@@ -21,4 +21,5 @@ def insert_post(name_post):
 if __name__ == "__main__":
     print("Get all records in DB: ", get_posts())
     print("Get one records in DB: ", get_post(1))
-    print("Insert one records in DB: ", insert_employ("Test"))
+    print("Insert one records in DB: ", insert_post("Test"))
+
