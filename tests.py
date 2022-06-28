@@ -1,6 +1,6 @@
-from db_classes import SqliteDB, MysqlDB
+from pyDBmanager.db_classes import SqliteDB, MysqlDB
 
-sqlite_db = SqliteDB(db_name="DataBaseName.db")
+sqlite_db = SqliteDB(db_name="assets/DataBaseName.db")
 mysql_db = MysqlDB(db_name="databasename", username="root", password="root")
 
 

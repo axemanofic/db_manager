@@ -2,15 +2,18 @@ import sqlite3
 import mysql.connector
 from prettytable import from_db_cursor
 
+from .functions import *
+
 
 class BaseDB(object):
     """
-    :type _isSelect: bool
+    :type _is_select: bool
     """
-    _isSelect = False
+    _is_select = False
 
-    def execute_sql(self, show=False):
+    def execute_sql(self, show=False, named_tuple=False):
         """
+        :param named_tuple: bool
         :param show: bool
         :return: void
         """
@@ -29,22 +32,22 @@ class BaseDB(object):
                     sql, params = get_query(*args)
                 except ValueError:
                     sql = get_query()
-                self._isSelect = self.__get_operation(sql)
-                result = self._executor(sql, params, show)
+                self._is_select = get_operation(sql)
+                result = self._executor(sql, params, *(show, named_tuple))
                 return result
             return main
         return wrapper
 
-    def __get_operation(self, sql):
-        """
-        :param sql: str
-        :return: bool
-        """
-        if sql.startswith("SELECT"):
-            return True
-        return False
+    def _check_default_params(self, cursor, *args):
+        if args[0]:
+            result = from_db_cursor(cursor)
+        elif args[1]:
+            result = get_namedtuple_from_data(cursor.fetchall(), cursor.description)
+        else:
+            result = cursor.fetchall()
+        return result
 
-    def _executor(self, sql, params, show):
+    def _executor(self, sql, params, *args):
         pass
 
     def _connect(self):
@@ -57,11 +60,10 @@ class SqliteDB(BaseDB):
         if "db_name" in kwargs:
             self.db_name = kwargs.get("db_name")
 
-    def _executor(self, sql, params, show):
+    def _executor(self, sql, params, *args):
         """
         :param sql: str
         :param params: tuple
-        :param show: bool
         :return: list|bool|str
         """
         connection = cursor = None
@@ -69,19 +71,16 @@ class SqliteDB(BaseDB):
             connection = sqlite3.connect(self.db_name)
             cursor = connection.cursor()
             cursor.execute(sql, params)
-            if self._isSelect:
-                if show:
-                    result = from_db_cursor(cursor)
-                else:
-                    result = cursor.fetchall()
+            if self._is_select:
+                result = self._check_default_params(cursor, *args)
         except Exception as e:
             print(e)
             result = False
         else:
-            result = result if self._isSelect else True
+            result = result if self._is_select else True
             connection.commit()
         finally:
-            cursor.close()
+            # cursor.close()
             connection.close()
         return result
 
@@ -104,7 +103,7 @@ class MysqlDB(BaseDB):
         else:
             self.port = 3306
 
-    def _executor(self, sql, params, show):
+    def _executor(self, sql, params, *args):
         """
         :param sql: str
         :param params: tuple
@@ -117,18 +116,15 @@ class MysqlDB(BaseDB):
                                                  port=self.port, host=self.host)
             cursor = connection.cursor()
             cursor.execute(sql, params)
-            if self._isSelect:
-                if show:
-                    result = from_db_cursor(cursor)
-                else:
-                    result = cursor.fetchall()
+            if self._is_select:
+                result = self._check_default_params(cursor, *args)
         except Exception as e:
-            result = False
             print(e)
+            result = False
         else:
-            result = result if self._isSelect else True
+            result = result if self._is_select else True
             connection.commit()
         finally:
-            cursor.close()
+            # cursor.close()
             connection.close()
         return result

@@ -46,8 +46,9 @@ INSERT INTO databasename.posts (id, name_post) VALUES (7, 'Нет должнос
 ```
 
 ## Examples
+
 ```python
-from db_classes import SqliteDB, MysqlDB
+from pyDBmanager.db_classes import SqliteDB, MysqlDB
 
 sqlite_db = SqliteDB(db_name="DataBaseName.db")
 mysql_db = MysqlDB(db_name="databasename", username="root", password="root")
@@ -83,16 +84,16 @@ def insert_post(name_post):
 
 if __name__ == "__main__":
     print("Example of outputting a table using prettytable: ")
-    print(get_employs(), end=2*'\n')
+    print(get_employs(), end=2 * '\n')
 
     print("Example of data output from parameters in sqlite: ")
-    print(get_post_sqlite(1), end=2*'\n')
+    print(get_post_sqlite(1), end=2 * '\n')
 
     print("Example of data output from parameters in mysql: ")
-    print(get_post_mysql(1), end=2*'\n')
+    print(get_post_mysql(1), end=2 * '\n')
 
     print("Example of data output from parameters in mysql: ")
-    print(insert_post("Test"), end=2*'\n')
+    print(insert_post("Test"), end=2 * '\n')
 
 ```
 ### Result
